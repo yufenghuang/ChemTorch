@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def read_PWMat_movement(filename, get_forces=False, get_velocities=False, get_Ei=False, get_Epot=False):
     with open(filename, 'r') as file:
         line = file.readline()
@@ -39,13 +40,13 @@ def read_PWMat_movement(filename, get_forces=False, get_velocities=False, get_Ei
 
             # returning results
             out = [n_atoms, lattice, atom_types, R]
-            if get_forces == True:
+            if get_forces:
                 out.append(forces)
-            if get_velocities == True:
+            if get_velocities:
                 out.append(velocities)
-            if get_Ei == True:
+            if get_Ei:
                 out.append(energies)
-            if get_Epot == True:
+            if get_Epot:
                 out.append(Epot)
             yield tuple(out)
 
@@ -53,7 +54,7 @@ def read_PWMat_movement(filename, get_forces=False, get_velocities=False, get_Ei
             line = file.readline()
 
 
-def read_outcar(filename, forces=False, velocities=False, iterator=False):
+def read_outcar(filename, forces=False, velocities=False):
     pass
 
 
