@@ -1,6 +1,5 @@
-def read_mmt():
+def write_xyz():
     pass
 
-def read_xyz():
+def write_special_xyz():
     pass
-
