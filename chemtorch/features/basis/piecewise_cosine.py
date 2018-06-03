@@ -74,7 +74,8 @@ def get_d_features(Rij, Rijk, Rhat, M2, M3, Rinner=0, Router=6):
     R2 = Router - (Router - Rinner) / M2
     R3 = Router - (Router - Rinner) / M3
 
-    phi2[Rij > 0] = piecewise_cosine(Rij[Rij>0], M2, start=Rinner, stop=R2)
+    phi2[Rij > 0] = piecewise_cosine(Rij[Rij > 0], M2, start=Rinner, stop=R2)
+    phi3_ij[Rij > 0] = piecewise_cosine(Rij[Rij > 0], M3, start=Rinner, stop=R3)
     phi3_ijk[Rijk > 0] = piecewise_cosine(Rijk[Rijk>0], M3, start=Rinner, stop=R3)
     d_phi2[Rij > 0] = diff_p_cosine(Rij[Rij>0], M2, start=Rinner, stop=R2)
     d_phi3[Rij > 0] = diff_p_cosine(Rij[Rij>0], M3, start=Rinner, stop=R3)
@@ -112,4 +113,5 @@ def get_d_features(Rij, Rijk, Rhat, M2, M3, Rinner=0, Router=6):
     g_dpdl = np.concatenate([g2_dpdl, g3_dpdl.reshape((nAtoms, maxNb, -1, dim))], axis=2)
 
     return g, g_dldl, g_dpdl
+
 

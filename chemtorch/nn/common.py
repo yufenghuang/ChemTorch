@@ -35,7 +35,7 @@ def mlnn(nn_in, weights, biases=None, activation="sigmoid"):
     return nn_in
 
 
-def mlnn_update(loss, optimizer):
+def mlnn_optimize(loss, optimizer):
     loss.backward()
     optimizer.step()
     optimizer.zero_grad()
