@@ -22,7 +22,9 @@ mlp = [num_feat, 50, 50, 50, num_engy]
 weights, biases = get_weights(mlp, xavier=True), get_biases(mlp)
 optimizer = torch.optim.Adam(biases + weights, lr=1e-4)
 
-filename = "tests\data\MOVEMENT.test" if platform == 'win32' else "tests/data/MOVEMENT.test"
+featFile = "tests\\data\\vfeat" if platform == 'win32' else "tests/data/vfeat"
+engyFile = "tests\\data\\vengy" if platform == 'win32' else "tests/data/vengy"
+filename = "tests\data\MOVEMENT.valid" if platform == 'win32' else "tests/data/MOVEMENT.valid"
 mmt = read_PWMat_movement(filename, get_forces=True, get_velocities=True, get_Ei=True, get_Epot=True)
 
 for iteration, (n_atoms, lattice, atom_types, Rfrac, F, V, Ei, Epot) in enumerate(mmt):
@@ -37,8 +39,8 @@ for iteration, (n_atoms, lattice, atom_types, Rfrac, F, V, Ei, Epot) in enumerat
 
     print(iteration)
 
-    pd.DataFrame(g.astype(np.float32)).to_csv("tests/data/tfeat", header=False, index=False, mode="w+")
-    pd.DataFrame(Ei[:, None].astype(np.float32)).to_csv("tests/data/tengy", header=False, index=False, mode="w+")
+    pd.DataFrame(g.astype(np.float32)).to_csv(featFile, header=False, index=False, mode="a")
+    pd.DataFrame(Ei[:, None].astype(np.float32)).to_csv(engyFile, header=False, index=False, mode="a")
 
 # nn_out = mlnn(x, weights, biases, activation="sigmoid")
 # loss = torch.sum((nn_out - y)**2)
