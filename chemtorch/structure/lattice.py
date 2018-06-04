@@ -25,3 +25,4 @@ def standardize_lattice(lattice):
     else:
         raise ValueError("The input lattice vector has", len(L), "elements, "
                          "make sure it can be converted to a square matrix. ")
+

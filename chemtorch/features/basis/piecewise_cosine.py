@@ -115,4 +115,3 @@ def get_d_features(Rij, Rijk, Rhat, M2, M3, Rinner=0, Router=6):
 
     return g, g_dldl, g_dpdl
 
-

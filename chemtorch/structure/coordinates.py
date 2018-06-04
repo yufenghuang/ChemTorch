@@ -1,5 +1,5 @@
 import numpy as np
-from chemtorch.structure.graph import adj_mat2list
+from .graph import adj_mat2list
 
 
 def cart2frac(R_cart, lattice):
