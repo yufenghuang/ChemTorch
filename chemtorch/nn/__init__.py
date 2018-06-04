@@ -2,7 +2,7 @@ import torch
 import torch.nn
 
 
-def get_weights(mlp, dtype=torch.float, device=torch.device('cpu'), xavier=False):
+def get_weights(mlp, dtype=torch.float, device=torch.device('cpu'), xavier=True):
     weights = [torch.zeros([mlp[i], mlp[i + 1]], dtype=dtype, device=device, requires_grad=True)
                for i in range(len(mlp) - 1)]
     if xavier:
