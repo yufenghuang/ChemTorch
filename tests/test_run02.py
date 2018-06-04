@@ -22,9 +22,9 @@ mlp = [num_feat, 50, 50, 50, num_engy]
 weights, biases = get_weights(mlp, xavier=True), get_biases(mlp)
 optimizer = torch.optim.Adam(biases + weights, lr=1e-4)
 
-featFile = "tests\\data\\vfeat" if platform == 'win32' else "tests/data/vfeat"
-engyFile = "tests\\data\\vengy" if platform == 'win32' else "tests/data/vengy"
-filename = "tests\data\MOVEMENT.valid" if platform == 'win32' else "tests/data/MOVEMENT.valid"
+featFile = "tests\\data\\feat" if platform == 'win32' else "tests/data/feat"
+engyFile = "tests\\data\\engy" if platform == 'win32' else "tests/data/engy"
+filename = "tests\data\MOVEMENT.train" if platform == 'win32' else "tests/data/MOVEMENT.train"
 mmt = read_PWMat_movement(filename, get_forces=True, get_velocities=True, get_Ei=True, get_Epot=True)
 
 for iteration, (n_atoms, lattice, atom_types, Rfrac, F, V, Ei, Epot) in enumerate(mmt):
