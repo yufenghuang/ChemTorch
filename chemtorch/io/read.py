@@ -41,7 +41,7 @@ def read_PWMat_movement(filename, get_forces=False, get_velocities=False, get_Ei
             # returning results
             out = [n_atoms, lattice, atom_types, R]
             if get_forces:
-                out.append(forces)
+                out.append(-forces)
             if get_velocities:
                 out.append(velocities)
             if get_Ei:

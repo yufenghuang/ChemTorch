@@ -9,7 +9,7 @@ def get_dcos_dR(Rcart, lattice, M2, M3, Rinner=0.0, Router=6):
     idxNb, Rij, maxNb = structure.get_nb(Rcart, lattice, dcut=6.2)
     dij, dijk, Rhat = structure. get_distances(Rij)
     g, g_dldl, g_dpdl = cos_basis.get_d_features(dij, dijk, Rhat, M2, M3, Rinner=Rinner, Router=Router)
-    return g, g_dldl, g_dpdl
+    return g, g_dldl, g_dpdl, idxNb
 
 
 def get_dGaussian_dR():

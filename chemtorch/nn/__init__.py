@@ -1,5 +1,21 @@
 import torch
+import numpy as np
 import torch.nn
+from .coord2energy import get_forces
+
+
+def np2torch(*np_arrays, dtype=torch.float):
+    if len(np_arrays) == 1:
+        return torch.from_numpy(np_arrays[0]).to(dtype)
+    else:
+        return tuple([torch.from_numpy(np_array).to(dtype) for np_array in np_arrays])
+
+
+def torch2np(*torch_arrays, dtype=np.float64):
+    if len(torch_arrays) == 1:
+        return torch_arrays[0].detach().numpy().astype(dtype)
+    else:
+        return tuple([torch_array.detach().numpy().astype(dtype) for torch_array in torch_arrays])
 
 
 def get_weights(mlp, dtype=torch.float, device=torch.device('cpu'), xavier=True):
