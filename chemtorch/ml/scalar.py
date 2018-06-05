@@ -4,13 +4,13 @@ import pandas as pd
 
 
 def get_scalar(x):
-    scalar = MinMaxScaler(feature_range=(0,1))
+    scalar = MinMaxScaler(feature_range=(0, 1))
     scalar.fit(x)
 
     b = scalar.transform(np.zeros((1, x.shape[-1])))
     a = scalar.transform(np.ones((1, x.shape[-1]))) - b
 
-    return a, b
+    return [a.reshape(-1), b.reshape(-1)]
 
 
 def get_scalar_csv(filename):

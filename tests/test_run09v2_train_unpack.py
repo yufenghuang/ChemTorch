@@ -11,7 +11,7 @@ from chemtorch.io import stream_structures
 from chemtorch.features import get_dG_dR
 
 from chemtorch.parameters import settings
-settings['epoch'] = 5
+settings['epoch'] = 50
 
 weights, biases = None, None
 dtype, device = locate(settings['dtype']), settings['device']
