@@ -11,7 +11,6 @@ def adj_list2mat(adjList, *values):
     adjMat = np.zeros((len(adjList), len(adjList)), dtype=int)
     for i in range(len(adjList)):
         adjMat[i, adjList[i, adjList[i] > 0] - 1] = 1
-    # adjMat = np.array([[1 if k + 1 in item[item > 0] else 0 for k in range(len(adjList))] for item in adjList])
 
     if len(values) == 0:
         return adjMat
