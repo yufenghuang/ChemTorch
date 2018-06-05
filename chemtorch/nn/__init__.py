@@ -6,9 +6,10 @@ from .coord2energy import get_forces
 
 def np2torch(*np_arrays, dtype=torch.float):
     if len(np_arrays) == 1:
-        return torch.from_numpy(np_arrays[0]).to(dtype)
+        x = np_arrays[0]
+        return torch.from_numpy(np.array(x)).to(dtype)
     else:
-        return tuple([torch.from_numpy(np_array).to(dtype) for np_array in np_arrays])
+        return tuple([torch.from_numpy(np.array(x)).to(dtype) for x in np_arrays])
 
 
 def torch2np(*torch_arrays, dtype=np.float64):

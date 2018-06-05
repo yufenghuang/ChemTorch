@@ -11,13 +11,18 @@ from ..io import stream_structures
 from ..features import get_dG_dR
 
 
-def train_energy(settings):
+def train_energy(settings, weights=None, biases=None, gscalar=[1, 0], escalar=[1, 0]):
     dtype, device = locate(settings['dtype']), settings['device']
 
     M2, M3 = settings['M2'], settings['M3']
     num_feat, num_engy = M2 + M3 ** 3, 1
     mlp = [num_feat] + settings['hidden_layers'] + [num_engy]
-    weights, biases = get_weights(mlp), get_biases(mlp)
+
+    # initialize weights and biases if they are not provided
+    weights = get_weights(mlp) if weights is None else list(np2torch(*weights))
+    biases = get_biases(mlp) if biases is None else list(np2torch(*biases))
+    for (w, b) in zip(weights, biases): w.requires_grad, b.requires_grad = True, True
+
     optimizer = torch.optim.Adam(biases + weights, lr=settings['learning_rate'])
 
     feat_a, feat_b = get_scalar_csv(settings["valid_feat_file"])
@@ -48,15 +53,21 @@ def train_energy(settings):
 
         print(i_epoch, torch2np(rmse), time.time() - start)
 
+    return list(torch2np(*weights)), list(torch2np(*biases))
 
-def train_force(settings):
+def train_force(settings, weights=None, biases=None, gscalar=[1, 0], escalar=[1, 0]):
     dtype, device = locate(settings['dtype']), settings['device']
 
     M2, M3 = settings['M2'], settings['M3']
     num_feat, num_engy = M2 + M3 ** 3, 1
     mlp = [num_feat] + settings['hidden_layers'] + [num_engy]
     Rc = settings['Router']
-    weights, biases = get_weights(mlp), get_biases(mlp)
+
+    # initialize weights and biases if they are not provided
+    weights = get_weights(mlp) if weights is None else list(np2torch(*weights))
+    biases = get_biases(mlp) if biases is None else list(np2torch(*biases))
+    for (w, b) in zip(weights, biases): w.requires_grad, b.requires_grad = True, True
+
     optimizer = torch.optim.Adam(biases + weights, lr=settings['learning_rate'])
 
     feat_a, feat_b = get_scalar_csv(settings["valid_feat_file"])
@@ -90,3 +101,5 @@ def train_force(settings):
             optimizer.step()
 
             print(step, *torch2np(torch.sqrt(E_mse), torch.sqrt(F_mse)), time.time() - start)
+
+    return list(torch2np(*weights)), list(torch2np(*biases))
