@@ -73,9 +73,31 @@ def get_nb(Rcart, lattice, dcut):
 
     adjMat = np.array((0 < d2ij) & (d2ij < dcut ** 2), dtype=int)
 
-    maxNb, idxNb, Rij = adj_mat2list(adjMat, Rij)
+    idxNb, Rij = adj_mat2list(adjMat, Rij)
+
+    maxNb = idxNb.shape[1]
 
     return idxNb, Rij, maxNb
+
+
+def get_nblist(Rcart, lattice, dcut):
+
+    nAtoms = Rcart.shape[0]
+    dim = Rcart.shape[-1]
+
+    Rij = Rcart[None, :, :] - Rcart[:, None, :]
+
+    Rfrac = cart2frac(Rij.reshape((-1, dim)), lattice)
+    Rfrac[Rfrac>0.5] = Rfrac[Rfrac>0.5]-1
+    Rij = frac2cart(Rfrac, lattice).reshape((nAtoms, -1, dim))
+
+    d2ij = np.sum(Rij ** 2, axis=-1)
+
+    adjMat = np.array((0 < d2ij) & (d2ij < dcut ** 2), dtype=int)
+
+    nblist = adj_mat2list(adjMat)
+
+    return nblist, adjMat
 
 
 def get_distances(Rij):

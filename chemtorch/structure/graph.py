@@ -43,14 +43,14 @@ def adj_mat2list(adjMat, *values):
     idxNb[idxNb == 1] = idx2 + 1
 
     if len(values) == 0:
-        return maxNb, idxNb
+        return idxNb
     else:
         outVal = [np.zeros([len(idxNb), maxNb] + list(val.shape)[2:], dtype=val.dtype) for val in values]
 
         for iVal, val in enumerate(values):
             (outVal[iVal])[idxNb > 0] = val[adjMat > 0]
 
-        return tuple([maxNb, idxNb] + outVal)
+        return tuple([idxNb] + outVal)
 
 
 

@@ -2,6 +2,8 @@ import torch
 import numpy as np
 import torch.nn
 from .coord2energy import get_forces
+from .coord2energy import get_distances, get_nb, pcosine
+from ..ml import get_scalar_csv
 
 
 def np2torch(*np_arrays, dtype=torch.float):
@@ -85,3 +87,82 @@ def d_mlnn(nn_in, weights, biases, activation='sigmoid'):
         d_nn_out = torch.matmul(d_nn_out * v * (1 - v), w.t())
 
     return nn_out, d_nn_out
+
+
+def R2G(Rcart, lattice, M2=25, M3=5, Rinner=0.0, Router=6.0):
+
+    R2 = Router - (Router - Rinner) / M2
+    R3 = Router - (Router - Rinner) / M3
+
+    nblist, Rij = get_nb(Rcart, lattice, Router)
+    dij, dijk, Rhat = get_distances(Rij)
+
+    phi2b = torch.zeros(*dij.shape, M2)
+    phi3b_ij = torch.zeros(*dij.shape, M3)
+    phi3b_ijk = torch.zeros(*dijk.shape, M3)
+
+    phi2b[dij > 0] = pcosine(dij[dij > 0], M2, start=Rinner, stop=R2)
+    phi3b_ij[dij > 0] = pcosine(dij[dij > 0], M3, start=Rinner, stop=R3)
+    phi3b_ijk[dijk > 0] = pcosine(dijk[dijk > 0], M3, start=Rinner, stop=R3)
+
+
+    G2 = torch.sum(phi2b, dim=1)
+
+    # shape of G3 will be: natoms x alpha x gamma x maxNb
+    G3 = torch.matmul(phi3b_ij.transpose(1,2)[:, :, None, None, :],
+                      phi3b_ijk.transpose(1,3)[:, None, :, :, :]).squeeze()
+
+    # shape of G3 will be: natoms x alpha x beta x gamma
+    G3 = torch.matmul(phi3b_ij.transpose(1,2)[:, None, :, None, :],
+                      G3.transpose(2,3)[:, :, None, :, :]).squeeze()
+
+    G = torch.cat((G2, G3.reshape(len(G3), -1)), 1)
+    return G
+
+
+def G2E(G, weights, biases, gscalar, escalar):
+    G = gscalar[0] * G + gscalar[1]
+
+    E = mlnn(G, weights, biases)
+
+    return E
+
+def R2E(Rcart, lattice, weights, biases, gscalar, escalar, settings):
+    settings['Router'] = 6.2
+    M2 = settings['M2']
+    M3 = settings['M3']
+    Rinner = settings['Rinner']
+    Router = settings['Router']
+    R2 = Router - (Router - Rinner) / M2
+    R3 = Router - (Router - Rinner) / M3
+
+    nblist, Rij = get_nb(Rcart, lattice, settings['Router'])
+    dij, dijk, Rhat = get_distances(Rij)
+
+    phi2b = torch.zeros(*dij.shape, settings['M2'])
+    phi3b_ij = torch.zeros(*dij.shape, settings['M3'])
+    phi3b_ijk = torch.zeros(*dijk.shape, settings['M3'])
+
+
+    phi2b[dij > 0] = pcosine(dij[dij > 0], settings['M2'], start=settings['Rinner'], stop=R2)
+    phi3b_ij[dij > 0] = pcosine(dij[dij > 0], settings['M3'], start=settings['Rinner'], stop=R3)
+    phi3b_ijk[dijk > 0] = pcosine(dijk[dijk > 0], settings['M3'], start=settings['Rinner'], stop=R3)
+
+
+    G2 = torch.sum(phi2b, dim=1)
+
+    # shape of G3 will be: natoms x alpha x gamma x maxNb
+    G3 = torch.matmul(phi3b_ij.transpose(1,2)[:, :, None, None, :],
+                      phi3b_ijk.transpose(1,3)[:, None, :, :, :]).squeeze()
+
+    # shape of G3 will be: natoms x alpha x beta x gamma
+    G3 = torch.matmul(phi3b_ij.transpose(1,2)[:, None, :, None, :],
+                      G3.transpose(2,3)[:, :, None, :, :]).squeeze()
+
+    G = torch.cat((G2, G3.reshape(len(G3), -1)), 1)
+
+    G = gscalar[0] * G + gscalar[1]
+
+    E = mlnn(G, weights, biases)
+
+    return E
