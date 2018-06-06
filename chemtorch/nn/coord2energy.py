@@ -38,7 +38,9 @@ def pcosine(Rij, num_basis, start=-1.0, stop=1.0):
     y = Rij[:, None] - nodes
     out = torch.zeros_like(y)
 
-    out[torch.abs(y) < h] = torch.cos(y[torch.abs(y) < h] * math.pi / h)/2 + 1/2
+    cos = torch.cos(y[torch.abs(y) < h] * math.pi / h)/2 + 1/2
+
+    out[torch.abs(y) < h] = cos.clone()
 
     return out
 
@@ -58,7 +60,9 @@ def dpcosine(Rij, num_basis, start=-1, stop=1):
     y = Rij[:, None] - nodes
     out = torch.zeros_like(y)
 
-    out[torch.abs(y) < h] = -1/2 * math.pi / h * torch.sin(y[torch.abs(y) < h] * math.pi / h)
+    sin = -1/2 * math.pi / h * torch.sin(y[torch.abs(y) < h] * math.pi / h)
+
+    out[torch.abs(y) < h] = sin.close()
 
     return out
 
@@ -74,8 +78,10 @@ def cart2frac(Rcart, lattice):
     Rfrac = Rcart.clone()
     if 0 < len(lattice):
         X, LU = torch.gesv(Rcart[:, :len(lattice)].t(), lattice.t())
+        X = X - torch.floor(X)
         Rfrac[:, :len(lattice)] = X.t()
-        Rfrac[:, :len(lattice)] = Rfrac[:, :len(lattice)] - torch.floor(Rfrac[:, :len(lattice)])
+        # Rfrac[:, :len(lattice)] = X.t()
+        # Rfrac[:, :len(lattice)] = Rfrac[:, :len(lattice)] - torch.floor(Rfrac[:, :len(lattice)])
     return Rfrac
 
 

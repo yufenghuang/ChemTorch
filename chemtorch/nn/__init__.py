@@ -82,8 +82,9 @@ def d_mlnn(nn_in, weights, biases, activation='sigmoid'):
     nn_out = node_vals[-1]
 
     # back propagate to obtain the derivative
-    d_nn_out = torch.matmul(torch.ones_like(node_vals[-1]), weights[-1].t())
-    for v, w in zip(reversed(node_vals[1:-1]), reversed(weights[:-1])):
+    # d_nn_out = torch.matmul(torch.ones_like(node_vals[-1]), weights[-1].t())
+    d_nn_out = 1
+    for v, w in zip(reversed(node_vals[1:]), reversed(weights)):
         d_nn_out = torch.matmul(d_nn_out * v * (1 - v), w.t())
 
     return nn_out, d_nn_out
